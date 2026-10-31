@@ -5,15 +5,16 @@ from pydantic import BaseModel
 from pymongo import MongoClient
 from datetime import datetime
 
-MONGO_URI = "mongodb+srv://rosbd:rosbd1234@rosbd.vu6gqbe.mongodb.net/?appName=rosbd"
+from config import CORS_ORIGINS, MONGO_DB, MONGO_URI
+
 client = MongoClient(MONGO_URI)
-db = client["forex_dashboard"]
+db = client[MONGO_DB]
 
 app = FastAPI(title="Forex Forecast API")
 
 app.add_middleware(
     CORSMiddleware,
-    allow_origins=["http://localhost:5173"],
+    allow_origins=CORS_ORIGINS,
     allow_methods=["*"],
     allow_headers=["*"],
 )
@@ -56,7 +57,7 @@ def receive_signal(payload: SignalPayload):
     data = payload.model_dump()
     data["timestamp"] = datetime.utcnow().isoformat()
 
-    # Periodic (NORMAL) → hanya update real-time fields, jaga decision terakhir
+    # Periodic (NORMAL) only updates real-time fields; keep the last decision.
     if data["signal"] == "NORMAL" and pid in last_signals:
         last_signals[pid]["price"] = data["price"]
         last_signals[pid]["atr"] = data["atr"]
@@ -64,7 +65,7 @@ def receive_signal(payload: SignalPayload):
         last_signals[pid]["regime"] = data["regime"]
         last_signals[pid]["timestamp"] = data["timestamp"]
     else:
-        # Decision (BUY/SELL/HOLD) → overwrite semua
+        # Decision (BUY/SELL/HOLD) replaces the stored signal.
         last_signals[pid] = data
 
     return {"status": "ok"}

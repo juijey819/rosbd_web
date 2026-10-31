@@ -1,0 +1,22 @@
+services:
+  pyspark-env:
+    image: jupyter/pyspark-notebook:latest
+    container_name: pyspark-container
+    ports:
+      - '8888:8888'
+      - '4040:4040'
+    env_file:
+      - .env
+    environment:
+      - SPARK_SUBMIT_OPTS=-Dorg.apache.spark.download.packages=org.apache.spark:spark-sql-kafka-0-10_2.12:3.5.0
+      - KAFKA_BOOTSTRAP_SERVERS=host.docker.internal:9093
+      - KAFKA_TOPIC=eurusd-stream
+      - BACKEND_URL=http://host.docker.internal:5050
+      - ES_URL=http://host.docker.internal:9200
+      - ES_FLUSH_INTERVAL=30
+      - ES_BATCH_SIZE=50
+      - ES_RETRY_INTERVAL=300
+    extra_hosts:
+      - "host.docker.internal:host-gateway"
+    volumes:
+      - .:/home/jovyan/work

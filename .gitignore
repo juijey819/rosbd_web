@@ -1,5 +1,16 @@
 node_modules/
 dist/
 .env
+.env.*
+!.env.example
 *.log
 .DS_Store
+
+__pycache__/
+*.py[cod]
+.venv/
+venv/
+.ipynb_checkpoints/
+.history/
+.vscode/
+.pytest_cache/

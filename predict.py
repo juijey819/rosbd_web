@@ -6,14 +6,15 @@ import json
 from datetime import datetime, timedelta
 from pymongo import MongoClient
 
-MONGO_URI = "mongodb+srv://rosbd:rosbd1234@rosbd.vu6gqbe.mongodb.net/?appName=rosbd"
+from config import MODEL_DIR, MONGO_DB, MONGO_URI
+
 client = MongoClient(MONGO_URI)
-db = client["forex_dashboard"]
+db = client[MONGO_DB]
 
 PAIRS = {
-    "EUR/USD": {"ticker": "EURUSD=X", "model": "outputs_revisi/ridge_eurusd_multihorizon.pkl", "features": "outputs_revisi/features_eurusd.json"},
-    "GBP/USD": {"ticker": "GBPUSD=X", "model": "outputs_revisi/ridge_gbpusd_multihorizon.pkl", "features": "outputs_revisi/features_gbpusd.json"},
-    "CHF/USD": {"ticker": "CHFUSD=X", "model": "outputs_revisi/ridge_chfusd_multihorizon.pkl", "features": "outputs_revisi/features_chfusd.json"},
+    "EUR/USD": {"ticker": "EURUSD=X", "model": MODEL_DIR / "ridge_eurusd_multihorizon.pkl", "features": MODEL_DIR / "features_eurusd.json"},
+    "GBP/USD": {"ticker": "GBPUSD=X", "model": MODEL_DIR / "ridge_gbpusd_multihorizon.pkl", "features": MODEL_DIR / "features_gbpusd.json"},
+    "CHF/USD": {"ticker": "CHFUSD=X", "model": MODEL_DIR / "ridge_chfusd_multihorizon.pkl", "features": MODEL_DIR / "features_chfusd.json"},
 }
 
 def calculate_rsi(close, period=14):
